@@ -1,4 +1,6 @@
-const Member = require('../models/Member');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const Member = require('../models/Admin');
 
 const registerMember = async (req, res) => {
     try {
@@ -10,7 +12,7 @@ const registerMember = async (req, res) => {
         });
         
         const savedMember = await member.save();
-        res.status(201).send({ member: member._id });
+        res.status(201).send({ member: savedMember._id });
     } catch (err) {
         res.status(400).send(err);
     }

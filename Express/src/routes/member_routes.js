@@ -18,5 +18,7 @@ router.post('/register',
     }
 );
 
+router.post('/login', memberController.loginMember);
+
 
 module.exports = router;

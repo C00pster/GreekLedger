@@ -1,0 +1,33 @@
+name: Express Security Checks
+
+on:
+  push:
+    paths:
+      - 'Express/**'
+  pull_request:
+    paths:
+      - 'Express/**'
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: |
+          cd Express
+          npm install
+
+      - name: Run Security Checks
+        run: |
+          cd Express
+          npm run lint
+          npm audit
+          
