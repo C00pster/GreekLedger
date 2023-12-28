@@ -7,7 +7,7 @@ require('dotenv').config();
 
 // Import routes
 const helloRouter  = require('./routes/hello_route');
-const memberRoutes = require('./routes/member_routes');
+const userRoutes = require('./routes/user_routes');
 
 // Set up express
 const app = express();
@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Set up routes
 app.use('/api/hello', helloRouter);
-app.use('/api/members', memberRoutes);
+app.use('/api/user', userRoutes);
 
 // Set up port and start server
 const PORT = process.env.PORT || 3000;
