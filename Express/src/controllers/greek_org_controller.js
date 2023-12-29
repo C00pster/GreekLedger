@@ -39,7 +39,7 @@ const addGreekOrgPresident = async (req, res) => {
         president.greekOrg = greekOrg._id;
         await president.save();
 
-        res.send(greekOrg);
+        res.json(greekOrg);
     } catch (err) {
         res.status(500).send(err);
     }
