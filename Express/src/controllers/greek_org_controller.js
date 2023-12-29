@@ -26,15 +26,20 @@ const getGreekOrg = async (req, res) => {
 
 const addGreekOrgPresident = async (req, res) => {
     try {
-        const greekOrg = await GreekOrg.findById(req.body.greekOrgId);
+        console.log(req.body)
+        const greekOrg = await GreekOrg.findOne({ name: req.body.greekOrgName });
         if (!greekOrg) return res.status(404).send('Greek Organization not found');
 
-        const president = await User.findByUsername(req.body.presidentUsername);
-        if (!president) return res.status(404).send('User not found');
+        const president = await User.findOne({ username: req.body.president });
+        if (!president) return res.status(404).send('User not found');;
 
         greekOrg.president = president._id;
-        president.greekOrg = greekOrg._id;
+        await greekOrg.save();
 
+        president.greekOrg = greekOrg._id;
+        await president.save();
+
+        res.send(greekOrg);
     } catch (err) {
         res.status(500).send(err);
     }
