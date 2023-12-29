@@ -13,7 +13,7 @@ const getToken = (req) => {
 
 // All users can access these routes
 const auth = async (req, res, next) => {
-    token = getToken(req);
+    const token = getToken(req);
     if (!token) return res.status(401).send('Access Denied');
 
     try {
@@ -27,7 +27,7 @@ const auth = async (req, res, next) => {
 
 // Only admins can access these routes
 const adminAuth = async (req, res, next) => {
-    token = getToken(req);
+    const token = getToken(req);
     if (!token) return res.status(401).send('Access Denied');
 
     try {

@@ -31,7 +31,7 @@ const addGreekOrgPresident = async (req, res) => {
         if (!greekOrg) return res.status(404).send('Greek Organization not found');
 
         const president = await User.findOne({ username: req.body.president });
-        if (!president) return res.status(404).send('User not found');;
+        if (!president) return res.status(404).send('User not found');
 
         greekOrg.president = president._id;
         await greekOrg.save();
