@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../schemas/User');
 
 const registerUser = async (req, res) => {
     try {
@@ -35,9 +35,9 @@ const loginUser = async (req, res) => {
     try {
         if (await bcrypt.compare(req.body.password, user.password)) {
             const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-            res.header('auth-token', token).send("Logged in");
+            res.header('Authorization', 'Bearer ' + token).send({token: token});
         } else {
-            res.send('Not Allowed');
+            res.send('Invalid password');
         }
     } catch (err) {
         res.status(500).send(err);
@@ -47,8 +47,15 @@ const loginUser = async (req, res) => {
 const getProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
-        if (!user) return res.status(404).send('User not found');
-        res.json(user);
+        res.send({
+            username: user.username,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            phone: user.phone,
+            greekOrg: user.greekOrg,
+            greekChapter: user.greekChapter,
+        });
     } catch (err) {
         res.status(500).send(err);
     }
