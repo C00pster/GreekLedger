@@ -9,6 +9,7 @@ require('dotenv').config();
 const helloRouter  = require('./routes/hello_route');
 const userRoutes = require('./routes/user_routes');
 const greekOrgRoutes = require('./routes/greek_org_routes');
+const greekChapterRoutes = require('./routes/greek_chapter_routes');
 
 // Set up express
 const app = express();
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/hello', helloRouter);
 app.use('/api/user', userRoutes);
 app.use('/api/greekorg', greekOrgRoutes); 
+app.use('/api/greekchapter', greekChapterRoutes);
 
 // Set up port and start server
 const PORT = process.env.PORT || 3000;
