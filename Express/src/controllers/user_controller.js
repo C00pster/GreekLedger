@@ -46,7 +46,15 @@ const loginUser = async (req, res) => {
 
 const getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id);
+        const authHeader = req.headers.authorization;
+        if (!req.headers.authorization) return res.status(401).send('Access Denied');
+
+        const token = authHeader.split(' ')[1];
+        if (!token) return res.status(401).send('Access Denied');
+
+        const verified = jwt.verify(token, process.env.TOKEN_SECRET);
+        const user = await User.findById(verified._id);
+
         res.send({
             username: user.username,
             name: user.name,
@@ -54,10 +62,12 @@ const getProfile = async (req, res) => {
             role: user.role,
             phone: user.phone,
             greekOrg: user.greekOrg,
+            greekOrgRole: user.greekOrgRole,
             greekChapter: user.greekChapter,
+            greekChapterRole: user.greekChapterRole,
         });
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500);
     }
 };
 

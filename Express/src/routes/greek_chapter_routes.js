@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { adminAuth } = require('../middleware/auth_middleware');
+const { checkAccess } = require('../middleware/auth_middleware');
 const { 
     createGreekChapter, 
     getGreekChapter, 
@@ -9,14 +9,42 @@ const {
     addGreekChapterOfficers,
     removeGreekChapterOfficers,
 } = require('../controllers/greek_chapter_controller');
+const {
+    createCalendarEvent,
+    takeAttendance,
+    getCalendarEvent,
+    updateCalendarEvent,
+    deleteCalendarEvent,
+} = require('../controllers/calendar_event_controller');
 
-router.post('', adminAuth, createGreekChapter);
-router.get('', adminAuth, getGreekChapter); //Need to update the auth later
-router.delete('', adminAuth, deleteGreekChapter);
+// Greek Chapter Operations
+router.post('', checkAccess('greekOrgOfficer', 
+    (req, res) => [req.body.greekOrg, null]), createGreekChapter);
+router.get('', checkAccess('greekChapterOfficer', 
+    (req, res) => [null, req.query.greekChapter]), getGreekChapter);
+router.delete('', checkAccess('greekOrgOfficer', 
+    (req, res) => [null, req.body.greekChapter]), deleteGreekChapter);
 
-router.post('/president', adminAuth, addGreekChapterPresident);
+// Greek Chapter Officer Operations
+router.post('/president', checkAccess('greekOrgOfficer', 
+    (req, res) => [null, req.body.greekChapter]), addGreekChapterPresident);
+router.post('/officers', checkAccess('greekChapterPresident', 
+    (req, res) => [null, req.body.greekChapter]), addGreekChapterOfficers);
+router.delete('/officers', checkAccess('greekChapterPresident', 
+    (req, res) => [null, req.body.greekChapter]), removeGreekChapterOfficers);
 
-router.post('/officers', adminAuth, addGreekChapterOfficers);
-router.delete('/officers', adminAuth, removeGreekChapterOfficers);
+// Calendar Event Operations
+router.post('/calendarEvent', checkAccess('greekOrgOfficer', 
+    (req, res) => [null, req.body.greekChapter]), createCalendarEvent);
+router.get('/calendarEvent', checkAccess('greekOrgOfficer', 
+    (req, res) => [null, req.body.greekChapter]), getCalendarEvent);
+router.put('/calendarEvent', checkAccess('greekOrgOfficer', 
+    (req, res) => [null, req.body.greekChapter]), updateCalendarEvent);
+router.delete('/calendarEvent', checkAccess('greekOrgOfficer', 
+    (req, res) => [null, req.body.greekChapter]), deleteCalendarEvent);
+
+// Calendar Event Attendance Operations
+router.post('/calendarEvent/attendance', checkAccess('greekOrgOfficer', 
+    (req, res) => [null, req.body.greekChapter]), takeAttendance);
 
 module.exports = router;

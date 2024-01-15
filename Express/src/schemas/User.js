@@ -7,8 +7,10 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true, min: 6, max: 1024 },
     role: {type: String, required: true },
     phone: {type: String, required: true },
-    greekOrg: {type: String, required: true },
+    greekOrg: {type: String, required: false },
+    greekOrgRole: {type: String, required: false },
     greekChapter: {type: String, required: false },
+    greekChapterRole: {type: String, required: false },
 });
 
 const User = mongoose.model('User', userSchema);

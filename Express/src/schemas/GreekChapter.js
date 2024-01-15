@@ -5,7 +5,8 @@ const greekChapterSchema = new mongoose.Schema({
     members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     officers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     president: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    greekOrg: { type: mongoose.Schema.Types.ObjectId, ref: 'GreekOrg' },
+    greekOrg: { type: String, ref: 'GreekOrg' },
+    calendarEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CalendarEvent' }],
 });
 
 const GreekChapter = mongoose.model('GreekChapter', greekChapterSchema);

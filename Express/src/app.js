@@ -11,6 +11,9 @@ const userRoutes = require('./routes/user_routes');
 const greekOrgRoutes = require('./routes/greek_org_routes');
 const greekChapterRoutes = require('./routes/greek_chapter_routes');
 
+// Import middleware
+const { addCredentials } = require('./middleware/auth_middleware');
+
 // Set up express
 const app = express();
 app.use(helmet());
@@ -27,8 +30,8 @@ app.use(express.urlencoded({ extended: true }));
 // Set up routes
 app.use('/api/hello', helloRouter);
 app.use('/api/user', userRoutes);
-app.use('/api/greekorg', greekOrgRoutes); 
-app.use('/api/greekchapter', greekChapterRoutes);
+app.use('/api/greekorg', addCredentials, greekOrgRoutes); 
+app.use('/api/greekchapter', addCredentials, greekChapterRoutes);
 
 // Set up port and start server
 const PORT = process.env.PORT || 3000;
