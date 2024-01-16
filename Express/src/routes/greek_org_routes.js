@@ -19,7 +19,10 @@ router.get('', checkAccess('greekOrgOfficer',
 // Greek Org Officer Operations
 router.post('/president', checkAccess('admin', null, null), addGreekOrgPresident);
 router.post('/officers', checkAccess('greekOrgPresident', 
-    (req) => [req.body.greekOrg, null]), 
+    (req) => {
+        console.log("made it")
+        return [req.body.greekOrg, null]
+    }), 
     addGreekOrgOfficers);
 router.delete('/officers', checkAccess('greekOrgPresident', 
     (req) => [req.body.greekOrg, null]), 

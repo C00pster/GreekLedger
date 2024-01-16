@@ -26,20 +26,25 @@ const getGreekOrg = async (req, res) => {
 
 const addGreekOrgPresident = async (req, res) => {
     try {
-        const greekOrg = await GreekOrg.findById(req.body.greekOrgName);
+        const greekOrg = await GreekOrg.findById(req.body.greekOrg);
         if (!greekOrg) return res.status(404).send('Greek Organization not found');
 
         const president = await User.findOne({ username: req.body.president });
         if (!president) return res.status(404).send('User not found');
-        if (president.greekOrgRole !== "member" && president.greekChapterRole !== "member") return res.status(400).send('User is already an officer in a greek organization');
 
-        if (greekOrg.president) {
-            const oldPresident = await User.findById(greekOrg.president);
+        if (president.greekChapterRole === "president") return res.status(400).json({ message: president.name + " is already the president of a greek chapter"});
+        if (president.greekChapterRole === "officer")  return res.status(400).json({ message: president.name + " is already an officer in a greek chapter"});
+        if (president.greekOrgRole === "president") return res.status(400).json({ message: president.name + " is already the president of a greek organization"});
+        if (president.greekOrgRole === "officer") return res.status(400).json({ message: president.name + " is already an officer in a greek organization"});
+
+        if (greekOrg.president._id) {
+            const oldPresident = await User.findById(greekOrg.president._id);
             oldPresident.greekOrgRole = "member";
             await oldPresident.save();
         }
 
-        greekOrg.president = president._id;
+        greekOrg.president._id = president._id;
+        greekOrg.president.name = president.name;
         await greekOrg.save();
 
         president.greekOrg = greekOrg._id;
@@ -51,26 +56,25 @@ const addGreekOrgPresident = async (req, res) => {
         res.json(greekOrg);
     } catch (err) {
         res.status(500).send(err);
+        console.log(err)
     }
 }
 
 const addGreekOrgOfficers = async (req, res) => {
     try {
-        const greekOrg = await GreekOrg.findById(req.body.greekOrgName);
+        const greekOrg = await GreekOrg.findById(req.body.greekOrg);
         if (!greekOrg) return res.status(404).send('Greek Organization not found');
 
         const officers = await User.find({ username: req.body.officers });
-        if (!officers) return res.status(404).send('User not found');
+        if (officers.length == 0) return res.status(404).send('No user found');
 
         const saveOfficerPromises = officers.map(officer => {
-            if (officer.greekChapterRole !== "member") {
-                if (officer.greekChapterRole === "president") return res.status(400).json({ message: officer.name + " is already the president of a greek chapter"});
-                else return res.status(400).json({ message: officer.name + " is already an officer in a greek chapter"});
-            } else if (officer.greekOrgRole !== "member") {
-                if (officer.greekOrgRole === "president") return res.status(400).json({ message: officer.name + " is already the president of a greek organization"});
-                else return res.status(400).json({ message: officer.name + " is already an officer in a greek organization"});
-            }
-            greekOrg.officers.push(officer._id);
+            if (officer.greekChapterRole === "president") return res.status(400).json({ message: officer.name + " is already the president of a greek chapter"});
+            if (officer.greekChapterRole === "officer")  return res.status(400).json({ message: officer.name + " is already an officer in a greek chapter"});
+            if (officer.greekOrgRole === "president") return res.status(400).json({ message: officer.name + " is already the president of a greek organization"});
+            if (officer.greekOrgRole === "officer") return res.status(400).json({ message: officer.name + " is already an officer in a greek organization"});
+            greekOrg.officers.push({ _id: officer._id, name: officer.name });
+
             officer.greekOrg = greekOrg._id;
             officer.greekOrgRole = "officer";
             officer.greekChapter = null;
@@ -84,12 +88,13 @@ const addGreekOrgOfficers = async (req, res) => {
         res.json(greekOrg);
     } catch (err) {
         res.status(500).send(err);
+        console.log(err);
     }
 };
 
 const removeGreekOrgOfficers = async (req, res) => {
     try {
-        const greekOrg = await GreekOrg.findOne({ _id: req.body.greekOrgName });
+        const greekOrg = await GreekOrg.findOne({ _id: req.body.greekOrg });
         if (!greekOrg) return res.status(404).send('Greek Organization not found');
 
         const officers = await User.find({ username: { $in: req.body.officers } });
@@ -97,7 +102,7 @@ const removeGreekOrgOfficers = async (req, res) => {
 
         const officerIdsToRemove = new Set(officers.map(officer => officer._id.toString()));
 
-        greekOrg.officers = greekOrg.officers.filter(officerId => !officerIdsToRemove.has(officerId.toString()));
+        greekOrg.officers = greekOrg.officers.filter(officer => !officerIdsToRemove.has(officer._id.toString()));
 
         const updateOfficerPromises = officers.map(officer => {
             officer.greekOrgRole = "member";
@@ -107,7 +112,7 @@ const removeGreekOrgOfficers = async (req, res) => {
         await Promise.all(updateOfficerPromises);
         await greekOrg.save();
 
-        res.status(200).send('Officers removed successfully');
+        res.status(204).send('Greek Chapter Officers Removed');
     } catch (err) {
         res.status(500).send(err);
     }

@@ -10,10 +10,9 @@ const registerUser = async (req, res) => {
             name: req.body.name,
             email: req.body.email,
             password: hashedPassword,
-            role: req.body.role,
             phone: req.body.phone,
             greekOrg: req.body.greekOrg,
-            greekChapter: req.body.greekChapter ? req.body.greekChapter : null,
+            greekChapter: req.body.greekChapter,
         });
         
         const savedUser = await user.save();
@@ -59,7 +58,6 @@ const getProfile = async (req, res) => {
             username: user.username,
             name: user.name,
             email: user.email,
-            role: user.role,
             phone: user.phone,
             greekOrg: user.greekOrg,
             greekOrgRole: user.greekOrgRole,

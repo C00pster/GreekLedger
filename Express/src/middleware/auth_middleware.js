@@ -14,9 +14,7 @@ const addCredentials = async (req, res, next) => {
         const member = await User.findById(verified._id);
 
         req.auth = {};
-        if (member.role === 'admin') {
-            req.auth.admin = true;
-        }
+        req.auth.admin = member.admin;
         if (member.greekOrg) {
             req.auth.greekOrg = member.greekOrg;
             req.auth.greekOrgRole = member.greekOrgRole;
@@ -33,7 +31,7 @@ const addCredentials = async (req, res, next) => {
 
 const roleChecks = {
     /* Checks if user is admin */
-    isAdmin: async (auth) => auth.admin,
+    isAdmin: (auth) => auth.admin,
 
     /* Checks if user is president of given greek org. If no greek org is given, find the greek org of
     the given greek chapter and checks if the user is president of that. Otherwise false. */
@@ -68,10 +66,10 @@ const roleChecks = {
     },
     
     /* Checks if user is president of given greek chapter. If no greek chapter is given, returns false. */
-    isGreekChapterPresident: async (auth, greekOrg, greekChapter) => auth.greekChapterRole === 'president' && auth.greekChapter === greekChapter,
+    isGreekChapterPresident: (auth, greekOrg, greekChapter) => auth.greekChapterRole === 'president' && auth.greekChapter === greekChapter,
     
     /* Checks if user is officer of given greek chapter. If no greek chapter is given, returns false. */
-    isGreekChapterOfficer: async (auth, greekOrg, greekChapter) => auth.greekChapterRole === 'officer' && auth.greekChapter === greekChapter,
+    isGreekChapterOfficer: (auth, greekOrg, greekChapter) => auth.greekChapterRole === 'officer' && auth.greekChapter === greekChapter,
 };
 
 const roleHierarchy = {

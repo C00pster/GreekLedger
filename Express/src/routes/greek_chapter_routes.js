@@ -8,6 +8,8 @@ const {
     addGreekChapterPresident,
     addGreekChapterOfficers,
     removeGreekChapterOfficers,
+    addGreekChapterMembers,
+    removeGreekChapterMembers,
 } = require('../controllers/greek_chapter_controller');
 const {
     createCalendarEvent,
@@ -32,6 +34,12 @@ router.post('/officers', checkAccess('greekChapterPresident',
     (req) => [null, req.body.greekChapter]), addGreekChapterOfficers);
 router.delete('/officers', checkAccess('greekChapterPresident', 
     (req) => [null, req.body.greekChapter]), removeGreekChapterOfficers);
+
+// Greek Chapter Member Operations
+router.post('/members', checkAccess('greekOrgOfficer', 
+    (req) => [null, req.body.greekChapter]), addGreekChapterMembers);
+router.delete('/members', checkAccess('greekOrgOfficer',
+    (req) => [null, req.body.greekChapter]), removeGreekChapterMembers);
 
 // Calendar Event Operations
 router.post('/calendarEvent', checkAccess('greekOrgOfficer', 
