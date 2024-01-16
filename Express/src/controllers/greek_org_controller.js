@@ -64,11 +64,11 @@ const addGreekOrgOfficers = async (req, res) => {
 
         const saveOfficerPromises = officers.map(officer => {
             if (officer.greekChapterRole !== "member") {
-                if (officer.greekChapterRole === "president") return res.status(400).send(String(officer.name) + " is already the president of a greek chapter");
-                else return res.status(400).send(String(officer.name) + " is already an officer in a greek chapter");
+                if (officer.greekChapterRole === "president") return res.status(400).json({ message: officer.name + " is already the president of a greek chapter"});
+                else return res.status(400).json({ message: officer.name + " is already an officer in a greek chapter"});
             } else if (officer.greekOrgRole !== "member") {
-                if (officer.greekOrgRole === "president") return res.status(400).send(String(officer.name) + " is already the president of a greek organization");
-                else return res.status(400).send(String(officer.name) + " is already an officer in a greek organization");
+                if (officer.greekOrgRole === "president") return res.status(400).json({ message: officer.name + " is already the president of a greek organization"});
+                else return res.status(400).json({ message: officer.name + " is already an officer in a greek organization"});
             }
             greekOrg.officers.push(officer._id);
             officer.greekOrg = greekOrg._id;
