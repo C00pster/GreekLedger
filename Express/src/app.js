@@ -1,8 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-const cookieParser = require('cookie-parser');
-const csurf = require('csurf');
+// const cookieParser = require('cookie-parser');
+// const csurf = require('csurf');
 
 // Set up authentication
 require('dotenv').config();

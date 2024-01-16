@@ -117,7 +117,7 @@ const deleteChapterMeeting = async (req, res) => {
             return res.status(403).send('Unauthorized to delete this event');
         }
 
-        const deletedEvent = await ChapterMeeting.findByIdAndDelete(req.body.eventId);
+        await ChapterMeeting.findByIdAndDelete(req.body.eventId);
 
         res.status(200).send("Event deleted");
     } catch (err) {

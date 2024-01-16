@@ -54,6 +54,7 @@ router.post('/officers', (req, res, next) => {
     addGreekChapterOfficers);
 router.delete('/officers', (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+        next();
     },
     checkAccess('greekChapterPresident'), 
     removeGreekChapterOfficers);
