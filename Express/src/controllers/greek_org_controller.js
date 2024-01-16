@@ -63,7 +63,13 @@ const addGreekOrgOfficers = async (req, res) => {
         if (!officers) return res.status(404).send('User not found');
 
         const saveOfficerPromises = officers.map(officer => {
-            if (officer.greekOrgRole !== "member" && officer.greekChapterRole !== "member") return res.status(400).send(officer + " is already an officer in a greek organization");
+            if (officer.greekChapterRole !== "member") {
+                if (officer.greekChapterRole === "president") return res.status(400).send(String(officer.name) + " is already the president of a greek chapter");
+                else return res.status(400).send(String(officer.name) + " is already an officer in a greek chapter");
+            } else if (officer.greekOrgRole !== "member") {
+                if (officer.greekOrgRole === "president") return res.status(400).send(String(officer.name) + " is already the president of a greek organization");
+                else return res.status(400).send(String(officer.name) + " is already an officer in a greek organization");
+            }
             greekOrg.officers.push(officer._id);
             officer.greekOrg = greekOrg._id;
             officer.greekOrgRole = "officer";

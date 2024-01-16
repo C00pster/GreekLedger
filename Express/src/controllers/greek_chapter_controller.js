@@ -65,18 +65,18 @@ const addGreekChapterPresident = async (req, res) => {
         if (!president) res.status(404).send('User not found');
 
         if (president.greekChapterRole !== "member") {
-            if (president.greekChapterRole === "president") res.status(400).send(president.name + " is already the president of a greek chapter");
-            else res.status(400).send(president.name + " is already an officer in a greek chapter");
+            if (president.greekChapterRole === "president") res.status(400).send(String(president.name) + " is already the president of a greek chapter");
+            else res.status(400).send(String(president.name) + " is already an officer in a greek chapter");
         } else if (president.greekOrgRole !== "member") {
-            if (president.greekOrgRole === "president") res.status(400).send(president.name + " is already the president of a greek organization");
-            else res.status(400).send(president.name + " is already an officer in a greek organization");
+            if (president.greekOrgRole === "president") res.status(400).send(String(president.name) + " is already the president of a greek organization");
+            else res.status(400).send(String(president.name) + " is already an officer in a greek organization");
         }
 
         if (greekChapter.president) {
             const oldPresident = await User.findById(greekChapter.president);
             oldPresident.greekChapterRole = "member";
             await oldPresident.save();
-        };
+        }
 
         greekChapter.president = president._id;
         await greekChapter.save();
@@ -103,11 +103,11 @@ const addGreekChapterOfficers = async (req, res) => {
 
         for (const officer of officers) {
             if (officer.greekChapterRole !== "member") {
-                if (officer.greekChapterRole === "president") return res.status(400).send(officer.name + " is already the president of a greek chapter");
-                else return res.status(400).send(officer.name + " is already an officer in a greek chapter");
+                if (officer.greekChapterRole === "president") return res.status(400).send(String(officer.name) + " is already the president of a greek chapter");
+                else return res.status(400).send(String(officer.name) + " is already an officer in a greek chapter");
             } else if (officer.greekOrgRole !== "member") {
-                if (officer.greekOrgRole === "president") return res.status(400).send(officer.name + " is already the president of a greek organization");
-                else return res.status(400).send(officer.name + " is already an officer in a greek organization");
+                if (officer.greekOrgRole === "president") return res.status(400).send(String(officer.name) + " is already the president of a greek organization");
+                else return res.status(400).send(String(officer.name) + " is already an officer in a greek organization");
             }
             greekChapter.officers.push(officer._id);
 

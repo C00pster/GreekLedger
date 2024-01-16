@@ -1,4 +1,4 @@
-const GreekChapter = require('../schemas/GreekChapter');
+// const GreekChapter = require('../schemas/GreekChapter');
 const { CalendarEvent } = require('../schemas/CalendarEvent');
 
 const createCalendarEvent = async (req, res) => {
@@ -63,7 +63,7 @@ const updateCalendarEvent = async (req, res) => {
             return res.status(404).send('Calendar Event not found');
         }
 
-        res.status(200).send(updatedEvent);
+        res.status(200).send(updatedEvent._id);
     } catch (err) {
         res.status(400).send(err);
     }
@@ -76,7 +76,7 @@ const deleteCalendarEvent = async (req, res) => {
             return res.status(404).send('Calendar Event not found');
         }
 
-        res.status(200).send(deletedEvent);
+        res.status(200).send("Event deleted");
     } catch (err) {
         res.status(400).send(err);
     }

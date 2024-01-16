@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const User = require('../schemas/User');
-const GreekOrg = require('../schemas/GreekOrg');
 const GreekChapter = require('../schemas/GreekChapter');
 
 const addCredentials = async (req, res, next) => {
@@ -25,7 +24,7 @@ const addCredentials = async (req, res, next) => {
                 req.auth.greekChapter = member.greekChapter;
                 req.auth.greekChapterRole = member.greekChapterRole;
             }
-        };
+        }
         next();
     } catch (error) {
         res.status(400).send('Invalid Token');
