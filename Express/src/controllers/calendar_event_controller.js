@@ -1,54 +1,97 @@
-// const GreekChapter = require('../schemas/GreekChapter');
-const { CalendarEvent } = require('../schemas/CalendarEvent');
+// Managed in greek_chapter_routes.js
 
-const createCalendarEvent = async (req, res) => {
+const GreekChapter = require('../schemas/GreekChapter');
+const { ChapterMeeting } = require('../schemas/ChapterMeeting');
+
+const createChapterMeeting = async (req, res) => {
     try {
-        const calendarEvent = new CalendarEvent({
+        const greekChapter = await GreekChapter.findById(req.body.greekChapter);
+        if (!greekChapter) return res.status(404).send('Greek Chapter not found');
+
+        const chapterMeeting = new ChapterMeeting({
             title: req.body.title,
             description: req.body.description,
             start: req.body.start,
             end: req.body.end,
+            greekChapter: greekChapter._id
         });
+        const savedChapterMeeting = await chapterMeeting.save();
 
-        const savedCalendarEvent = await calendarEvent.save();
-        res.status(201).json({ calendarEvent: savedCalendarEvent._id });
+        greekChapter.chapterMeetings.push(savedChapterMeeting._id);
+        await greekChapter.save();
+
+        res.status(201).json({ chapterMeeting: savedChapterMeeting._id });
     } catch (err) {
         res.status(400).send("An error occurred");
+        console.error(err);
     }
 };
 
 const takeAttendance = async (req, res) => {
     try {
-        const updatedEvent = await CalendarEvent.findByIdAndUpdate(
+        const chapterMeeting = await ChapterMeeting.findById(req.body.eventId);
+        if (!chapterMeeting) return res.status(404).send('Chapter Meeting not found');
+
+        if (chapterMeeting.greekChapter !== req.auth.greekChapter) {
+            return res.status(403).send('Unauthorized to take attendance for this event');
+        }
+
+        const greekChapter = await GreekChapter.findById(chapterMeeting.greekChapter);
+        if (!greekChapter) return res.status(404).send('Greek Chapter not found');
+
+        if (greekChapter.members.length === 0) return res.status(400).send('No members to take attendance for');
+
+        const { present, absent_unexcused, absent_excused } = req.body;
+        const allMemberAttendanceIds = [...present, ...absent_excused, ...absent_unexcused];
+
+        const allMemberIds = greekChapter.members.map(member => member._id.toString());
+        const allMembersExist = allMemberAttendanceIds.every(memberId => allMemberIds.includes(memberId));
+        if (!allMembersExist) return res.status(400).send('One or more members do not exist');
+
+        const updatedEvent = await ChapterMeeting.findByIdAndUpdate(
             req.body.eventId,
-            { $set: { attendance: req.body.attendance, present: req.body.present, absent: req.body.absent } },
+            {
+                $set: {
+                    attendance: present.length, 
+                    present: present,
+                    absent_unexcused: absent_unexcused,
+                    absent_excused: absent_excused,
+                } 
+            },
             { new: true }
         );
 
-        if (updatedEvent) {
-            res.status(404).send('Calendar Event not found');
+        res.status(201).json(updatedEvent);
+    } catch (err) {
+        res.status(400).send("An error occurred");
+        console.error(err)
+    }
+};
+
+const getChapterMeeting = async (req, res) => {
+    try {
+        const chapterMeeting = await ChapterMeeting.findById(req.query.id);
+        if (!chapterMeeting) res.status(404).send('Chapter Meeting not found');
+
+        if (chapterMeeting.greekChapter !== req.auth.greekChapter) {
+            return res.status(403).send('Unauthorized to view this event');
         }
 
-        res.status(201).send({ chapterMeeting: updatedEvent._id});
+        res.json(chapterMeeting);
     } catch (err) {
         res.status(400).send("An error occurred");
     }
 };
 
-const getCalendarEvent = async (req, res) => {
+const updateChapterMeeting = async (req, res) => {
     try {
-        const calendarEvent = await CalendarEvent.findById(req.query.id);
-        if (!calendarEvent) res.status(404).send('Calendar Event not found');
+        const chapterMeeting = await ChapterMeeting.findById(req.body.eventId);
+        if (!chapterMeeting) return res.status(404).send('Chapter Meeting not found');
+        if (chapterMeeting.greekChapter !== req.auth.greekChapter) {
+            return res.status(403).send('Unauthorized to update this event');
+        }
 
-        res.json(calendarEvent);
-    } catch (err) {
-        res.status(400).send("An error occurred");
-    }
-};
-
-const updateCalendarEvent = async (req, res) => {
-    try {
-        const updatedEvent = await CalendarEvent.findByIdAndUpdate(
+        const updatedEvent = await ChapterMeeting.findByIdAndUpdate(
             req.body.eventId,
             {
                 title: req.body.title,
@@ -59,22 +102,22 @@ const updateCalendarEvent = async (req, res) => {
             { new: true }
         );
 
-        if (!updatedEvent) {
-            return res.status(404).send('Calendar Event not found');
-        }
-
         res.status(200).json({ _id: updatedEvent._id });
     } catch (err) {
         res.status(400).send("An error occurred");
+        console.error(err);
     }
 };
 
-const deleteCalendarEvent = async (req, res) => {
+const deleteChapterMeeting = async (req, res) => {
     try {
-        const deletedEvent = await CalendarEvent.findByIdAndDelete(req.body.eventId);
-        if (!deletedEvent) {
-            return res.status(404).send('Calendar Event not found');
+        const chapterMeeting = await ChapterMeeting.findById(req.body.eventId);
+        if (!chapterMeeting) return resizeTo.status(404).send('Chapter Meeting not found');
+        if (chapterMeeting.greekChapter !== req.auth.greekChapter) {
+            return res.status(403).send('Unauthorized to delete this event');
         }
+
+        const deletedEvent = await ChapterMeeting.findByIdAndDelete(req.body.eventId);
 
         res.status(200).send("Event deleted");
     } catch (err) {
@@ -83,9 +126,9 @@ const deleteCalendarEvent = async (req, res) => {
 };
 
 module.exports = {
-    createCalendarEvent,
+    createChapterMeeting,
     takeAttendance,
-    getCalendarEvent,
-    updateCalendarEvent,
-    deleteCalendarEvent,
+    getChapterMeeting,
+    updateChapterMeeting,
+    deleteChapterMeeting,
 };

@@ -21,7 +21,7 @@ const createGreekChapter = async (req, res) => {
         res.status(201).send({ greekChapter: savedGreekChapter._id });
     } catch (err) {
         res.status(500).send("An error occurred");
-        console.log(err);
+        console.error(err);
     }
 };
 
@@ -33,6 +33,7 @@ const getGreekChapter = async (req, res) => {
         res.json(greekChapter);
     } catch (err) {
         res.status(500).send("An error occurred");
+        console.error(err);
     }
 };
 
@@ -52,7 +53,7 @@ const deleteGreekChapter = async (req, res) => {
         res.status(204);
     } catch (err) {
         res.status(500).send("An error occurred");
-        console.log(err);
+        console.error(err);
     }
 };
 
@@ -86,6 +87,7 @@ const addGreekChapterPresident = async (req, res) => {
         res.json(greekChapter);
     } catch (err) {
         res.status(500).send("An error occurred");
+        console.error(err);
     }
 };
 
@@ -115,6 +117,7 @@ const addGreekChapterOfficers = async (req, res) => {
         res.json(savedGreekChapter);
     } catch (err) {
         res.status(500).send("An error occurred");
+        console.error(err);
     }
 };
 
@@ -148,6 +151,7 @@ const removeGreekChapterOfficers = async (req, res) => {
         res.status(204);
     } catch (err) {
         res.status(500).send("An error occurred");
+        console.error(err);
     }
 };
 
@@ -175,6 +179,7 @@ const addGreekChapterMembers = async (req, res) => {
         res.json(savedGreekChapter);
     } catch (err) {
         res.status(500).send("An error occurred");
+        console.error(err);
     }
 };
 
@@ -209,6 +214,7 @@ const removeGreekChapterMembers = async (req, res) => {
         res.status(204);
     } catch (err) {
         res.status(500).send("An error occurred");
+        console.error(err);
     }
 };
 

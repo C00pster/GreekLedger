@@ -7,9 +7,9 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true, min: 6, max: 1024 },
     admin: { type: Boolean, default: false },
     phone: {type: String, required: true },
-    greekOrg: {type: String, required: false },
+    greekOrg: {type: String, ref: "GreekChapter", required: false },
     greekOrgRole: {type: String, required: false },
-    greekChapter: {type: String, required: false },
+    greekChapter: {type: String, ref: "GreekChapter", required: false },
     greekChapterRole: {type: String, required: false },
 });
 

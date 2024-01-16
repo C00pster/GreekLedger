@@ -11,21 +11,37 @@ const {
 
 
 // Greek Org Operations
-router.post('', checkAccess('admin', null, null), createGreekOrg);
-router.get('', checkAccess('greekOrgOfficer', 
-    (req) => [req.body.greekOrg, null]), 
+router.post('', checkAccess('admin'), createGreekOrg);
+
+router.get('', (req, res, next) => {
+        req.check = {
+            greekOrg: req.query.greekOrg,
+            greekChapter: null,
+        };
+        next()
+    },
+    checkAccess('greekOrgOfficer'), 
     getGreekOrg);
 
 // Greek Org Officer Operations
-router.post('/president', checkAccess('admin', null, null), addGreekOrgPresident);
-router.post('/officers', checkAccess('greekOrgPresident', 
-    (req) => {
-        console.log("made it")
-        return [req.body.greekOrg, null]
-    }), 
+router.post('/president', checkAccess('admin'), addGreekOrgPresident);
+router.post('/officers', (req, res, next) => {
+        req.check = {
+            greekOrg: req.body.greekOrg,
+            greekChapter: null,
+        };
+        next();
+    },
+    checkAccess('greekOrgPresident'), 
     addGreekOrgOfficers);
-router.delete('/officers', checkAccess('greekOrgPresident', 
-    (req) => [req.body.greekOrg, null]), 
+router.delete('/officers', (req, res, next) => {
+        req.check = {
+            greekOrg: req.body.greekOrg,
+            greekChapter: null,
+        };
+        next();
+    },
+    checkAccess('greekOrgPresident'), 
     removeGreekOrgOfficers);
 
 module.exports = router;

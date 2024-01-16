@@ -56,7 +56,6 @@ const addGreekOrgPresident = async (req, res) => {
         res.json(greekOrg);
     } catch (err) {
         res.status(500).send("An error occurred");
-        console.log(err)
     }
 }
 
@@ -88,7 +87,6 @@ const addGreekOrgOfficers = async (req, res) => {
         res.json(greekOrg);
     } catch (err) {
         res.status(500).send("An error occurred");
-        console.log(err);
     }
 };
 

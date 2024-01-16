@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const csurf = require('csurf');
 
 // Set up authentication
@@ -27,7 +28,8 @@ mongoose.connect('mongodb://localhost:27017/test')
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(csurf({ cookie: true }));
+// app.use(cookieParser());
+// app.use(csurf({ cookie: true }));
 
 // Set up routes
 app.use('/api/hello', helloRouter);

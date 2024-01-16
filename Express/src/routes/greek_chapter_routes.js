@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { checkAccess } = require('../middleware/auth_middleware');
+const { checkAccess, checkAccessExplicit } = require('../middleware/auth_middleware');
 const { 
     createGreekChapter, 
     getGreekChapter, 
@@ -12,47 +12,98 @@ const {
     removeGreekChapterMembers,
 } = require('../controllers/greek_chapter_controller');
 const {
-    createCalendarEvent,
+    createChapterMeeting,
     takeAttendance,
-    getCalendarEvent,
-    updateCalendarEvent,
-    deleteCalendarEvent,
+    getChapterMeeting,
+    updateChapterMeeting,
+    deleteChapterMeeting,
 } = require('../controllers/calendar_event_controller');
 
 // Greek Chapter Operations
-router.post('', checkAccess('greekOrgOfficer', 
-    (req) => [req.body.greekOrg, null]), createGreekChapter);
-router.get('', checkAccess('greekChapterOfficer', 
-    (req) => [null, req.query.greekChapter]), getGreekChapter);
-router.delete('', checkAccess('greekOrgOfficer', 
-    (req) => [null, req.body.greekChapter]), deleteGreekChapter);
+router.post('', (req, res, next) => {
+        req.check = { greekOrg: req.body.greekOrg, greekChapter: null };
+        next();
+    },
+    checkAccess('greekOrgOfficer'), 
+    createGreekChapter);
+router.get('', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.query.greekChapter };
+        next();
+    },
+    checkAccess('greekChapterOfficer'), 
+    getGreekChapter);
+router.delete('', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+        next();
+    },
+    checkAccess('greekOrgOfficer'), 
+    deleteGreekChapter);
 
 // Greek Chapter Officer Operations
-router.post('/president', checkAccess('greekOrgOfficer', 
-    (req) => [null, req.body.greekChapter]), addGreekChapterPresident);
-router.post('/officers', checkAccess('greekChapterPresident', 
-    (req) => [null, req.body.greekChapter]), addGreekChapterOfficers);
-router.delete('/officers', checkAccess('greekChapterPresident', 
-    (req) => [null, req.body.greekChapter]), removeGreekChapterOfficers);
+router.post('/president', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+        next();
+    },
+    checkAccess('greekChapterPresident'), 
+    addGreekChapterPresident);
+router.post('/officers', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+        next();
+    },
+    checkAccess('greekChapterPresident'), 
+    addGreekChapterOfficers);
+router.delete('/officers', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+    },
+    checkAccess('greekChapterPresident'), 
+    removeGreekChapterOfficers);
 
 // Greek Chapter Member Operations
-router.post('/members', checkAccess('greekOrgOfficer', 
-    (req) => [null, req.body.greekChapter]), addGreekChapterMembers);
-router.delete('/members', checkAccess('greekOrgOfficer',
-    (req) => [null, req.body.greekChapter]), removeGreekChapterMembers);
+router.post('/members', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+        next();
+    },
+    checkAccess('greekChapterOfficer'), 
+    addGreekChapterMembers);
+router.delete('/members', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+        next();
+    },
+    checkAccess('greekChapterOfficer'), 
+    removeGreekChapterMembers);
 
-// Calendar Event Operations
-router.post('/calendarEvent', checkAccess('greekOrgOfficer', 
-    (req) => [null, req.body.greekChapter]), createCalendarEvent);
-router.get('/calendarEvent', checkAccess('greekOrgOfficer', 
-    (req) => [null, req.body.greekChapter]), getCalendarEvent);
-router.put('/calendarEvent', checkAccess('greekOrgOfficer', 
-    (req) => [null, req.body.greekChapter]), updateCalendarEvent);
-router.delete('/calendarEvent', checkAccess('greekOrgOfficer', 
-    (req) => [null, req.body.greekChapter]), deleteCalendarEvent);
+// Chapter Meeting Operations
+router.post('/meeting', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+        next();
+    },
+    checkAccessExplicit(['greekChapterOfficer', 'greekChapterPresident']), 
+    createChapterMeeting);
+router.get('/meeting', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.query.greekChapter };
+        next();
+    },
+    // auth handled in getChapterMeeting
+    getChapterMeeting);
+router.put('/meeting', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+        next();
+    },
+    checkAccessExplicit(['greekChapterOfficer', 'greekChapterPresident']), 
+    updateChapterMeeting);
+router.delete('/meeting', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+        next();
+    },
+    // auth handled in deleteChapterMeeting 
+    deleteChapterMeeting);
 
-// Calendar Event Attendance Operations
-router.post('/calendarEvent/attendance', checkAccess('greekOrgOfficer', 
-    (req) => [null, req.body.greekChapter]), takeAttendance);
+// Chapter Meeting Attendance Operations
+router.post('/meeting/attendance', (req, res, next) => {
+        req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
+        next();
+    },
+    checkAccessExplicit(['greekChapterOfficer', 'greekChapterPresident']), 
+    takeAttendance);
 
 module.exports = router;
