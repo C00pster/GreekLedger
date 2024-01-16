@@ -11,9 +11,9 @@ const createCalendarEvent = async (req, res) => {
         });
 
         const savedCalendarEvent = await calendarEvent.save();
-        res.status(201).send({ calendarEvent: savedCalendarEvent._id });
+        res.status(201).json({ calendarEvent: savedCalendarEvent._id });
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).send("An error occurred");
     }
 };
 
@@ -31,7 +31,7 @@ const takeAttendance = async (req, res) => {
 
         res.status(201).send({ chapterMeeting: updatedEvent._id});
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).send("An error occurred");
     }
 };
 
@@ -42,7 +42,7 @@ const getCalendarEvent = async (req, res) => {
 
         res.json(calendarEvent);
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).send("An error occurred");
     }
 };
 
@@ -63,9 +63,9 @@ const updateCalendarEvent = async (req, res) => {
             return res.status(404).send('Calendar Event not found');
         }
 
-        res.status(200).send(updatedEvent._id);
+        res.status(200).json({ _id: updatedEvent._id });
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).send("An error occurred");
     }
 };
 
@@ -78,7 +78,7 @@ const deleteCalendarEvent = async (req, res) => {
 
         res.status(200).send("Event deleted");
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).send("An error occurred");
     }
 };
 

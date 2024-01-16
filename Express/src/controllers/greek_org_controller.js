@@ -10,7 +10,7 @@ const createGreekOrg = async (req, res) => {
         const savedGreekOrg = await greekOrg.save();
         res.status(201).send({ greekOrg: savedGreekOrg._id });
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).send("An error occurred");
     }
 };
 
@@ -20,7 +20,7 @@ const getGreekOrg = async (req, res) => {
         if (!greekOrg) return res.status(404).send('Greek Organization not found');
         res.json(greekOrg);
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("An error occurred");
     }
 };
 
@@ -55,7 +55,7 @@ const addGreekOrgPresident = async (req, res) => {
 
         res.json(greekOrg);
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("An error occurred");
         console.log(err)
     }
 }
@@ -87,7 +87,7 @@ const addGreekOrgOfficers = async (req, res) => {
 
         res.json(greekOrg);
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("An error occurred");
         console.log(err);
     }
 };
@@ -114,7 +114,7 @@ const removeGreekOrgOfficers = async (req, res) => {
 
         res.status(204).send('Greek Chapter Officers Removed');
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("An error occurred");
     }
 };
 

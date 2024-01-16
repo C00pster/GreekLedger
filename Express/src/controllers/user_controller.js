@@ -18,7 +18,7 @@ const registerUser = async (req, res) => {
         const savedUser = await user.save();
         res.status(201).send({ user: savedUser._id });
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).send("An error occurred");
     }
 };
 
@@ -39,7 +39,7 @@ const loginUser = async (req, res) => {
             res.send('Invalid password');
         }
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("An error occurred");
     }
 };
 
@@ -75,7 +75,7 @@ const updateProfile = async (req, res) => {
         if (!updatedUser) return res.status(404).send('User not found');
         res.json(updatedUser);
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("An error occurred");
     }
 };
 
