@@ -15,7 +15,7 @@ const greekChapterSchema = new mongoose.Schema({
         name: String,
     },
     greekOrg: { type: String, ref: 'GreekOrg' },
-    chapterMeetings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChapterMeeting' }],
+    meetings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Meeting' }],
 });
 
 const GreekChapter = mongoose.model('GreekChapter', greekChapterSchema);

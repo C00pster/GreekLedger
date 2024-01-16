@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const chapterMeetingSchema = new mongoose.Schema({
+const meetingSchema = new mongoose.Schema({
     title: { type: String, required: true, min: 6, max: 255 },
     description: { type: String, required: true, min: 6, max: 255 },
     start: { type: Date, required: true },
@@ -12,8 +12,8 @@ const chapterMeetingSchema = new mongoose.Schema({
     absent_unexcused: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
-const ChapterMeeting = mongoose.model('ChapterMeeting', chapterMeetingSchema);
+const Meeting = mongoose.model('Meeting', meetingSchema);
 
 module.exports = {
-    ChapterMeeting
+    Meeting
 };

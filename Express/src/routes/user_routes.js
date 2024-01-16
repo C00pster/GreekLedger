@@ -6,12 +6,16 @@ const {
     getProfile,
     updateProfile,
 } = require('../controllers/user_controller');
-const { validateUserRegistration, handleErrors } = require('../middleware/express_validator_middleware');
+const {
+    validateUserRegistration,
+    validateUserLogin,
+    validateUserUpdate,
+} = require('../middleware/request_validation/user_request_validation');
 
-router.post('/register', validateUserRegistration, handleErrors, registerUser);
+router.post('/register', validateUserRegistration, registerUser);
 
-router.post('/login', loginUser);
+router.post('/login', validateUserLogin, loginUser);
 router.get('/profile', getProfile);
-router.put('/profile', updateProfile);
+router.put('/profile', validateUserUpdate, updateProfile);
 
 module.exports = router;

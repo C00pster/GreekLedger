@@ -1,6 +1,23 @@
+// Set up router
 const express = require('express');
 const router = express.Router();
+
+// Import middleware
 const { checkAccess, checkAccessExplicit } = require('../middleware/auth_middleware');
+const {
+    validateGreekChapterCreate,
+    validateGreekChapterDelete,
+    validateGreekChapterPresident,
+    validateGreekChapterMembers,
+} = require('../middleware/request_validation/greek_chapter_validation');
+const {
+    validateMeetingCreate,
+    validateMeetingUpdate,
+    validateMeetingDelete,
+    validateMeetingAttendance,
+} = require('../middleware/request_validation/meeting_validation');
+
+//Import controllers
 const { 
     createGreekChapter, 
     getGreekChapter, 
@@ -12,15 +29,15 @@ const {
     removeGreekChapterMembers,
 } = require('../controllers/greek_chapter_controller');
 const {
-    createChapterMeeting,
+    createMeeting,
     takeAttendance,
-    getChapterMeeting,
-    updateChapterMeeting,
-    deleteChapterMeeting,
-} = require('../controllers/calendar_event_controller');
+    getMeeting,
+    updateMeeting,
+    deleteMeeting,
+} = require('../controllers/meeting_controller');
 
 // Greek Chapter Operations
-router.post('', (req, res, next) => {
+router.post('', validateGreekChapterCreate, (req, res, next) => {
         req.check = { greekOrg: req.body.greekOrg, greekChapter: null };
         next();
     },
@@ -32,7 +49,7 @@ router.get('', (req, res, next) => {
     },
     checkAccess('greekChapterOfficer'), 
     getGreekChapter);
-router.delete('', (req, res, next) => {
+router.delete('', validateGreekChapterDelete, (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
         next();
     },
@@ -40,19 +57,19 @@ router.delete('', (req, res, next) => {
     deleteGreekChapter);
 
 // Greek Chapter Officer Operations
-router.post('/president', (req, res, next) => {
+router.post('/president', validateGreekChapterPresident, (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
         next();
     },
     checkAccess('greekChapterPresident'), 
     addGreekChapterPresident);
-router.post('/officers', (req, res, next) => {
+router.post('/officers', validateGreekChapterMembers, (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
         next();
     },
     checkAccess('greekChapterPresident'), 
     addGreekChapterOfficers);
-router.delete('/officers', (req, res, next) => {
+router.delete('/officers', validateGreekChapterMembers, (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
         next();
     },
@@ -60,13 +77,13 @@ router.delete('/officers', (req, res, next) => {
     removeGreekChapterOfficers);
 
 // Greek Chapter Member Operations
-router.post('/members', (req, res, next) => {
+router.post('/members', validateGreekChapterMembers, (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
         next();
     },
     checkAccess('greekChapterOfficer'), 
     addGreekChapterMembers);
-router.delete('/members', (req, res, next) => {
+router.delete('/members', validateGreekChapterMembers, (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
         next();
     },
@@ -74,33 +91,33 @@ router.delete('/members', (req, res, next) => {
     removeGreekChapterMembers);
 
 // Chapter Meeting Operations
-router.post('/meeting', (req, res, next) => {
+router.post('/meeting', validateMeetingCreate, (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
         next();
     },
     checkAccessExplicit(['greekChapterOfficer', 'greekChapterPresident']), 
-    createChapterMeeting);
+    createMeeting);
 router.get('/meeting', (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.query.greekChapter };
         next();
     },
-    // auth handled in getChapterMeeting
-    getChapterMeeting);
-router.put('/meeting', (req, res, next) => {
+    // auth handled in getMeeting
+    getMeeting);
+router.put('/meeting', validateMeetingUpdate, (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
         next();
     },
     checkAccessExplicit(['greekChapterOfficer', 'greekChapterPresident']), 
-    updateChapterMeeting);
-router.delete('/meeting', (req, res, next) => {
+    updateMeeting);
+router.delete('/meeting', validateMeetingDelete, (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
         next();
     },
-    // auth handled in deleteChapterMeeting 
-    deleteChapterMeeting);
+    // auth handled in deleteMeeting 
+    deleteMeeting);
 
 // Chapter Meeting Attendance Operations
-router.post('/meeting/attendance', (req, res, next) => {
+router.post('/meeting/attendance', validateMeetingAttendance, (req, res, next) => {
         req.check = { greekOrg: null, greekChapter: req.body.greekChapter };
         next();
     },
